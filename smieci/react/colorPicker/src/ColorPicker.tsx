@@ -29,13 +29,16 @@ function ColorPicker({ }: Props) {
     }
 
     return (
-        <div className='container'>
-            <h1>Color Picker</h1>
+        <div className='colorPicker'>
+            <div className='container'>
+                <h1>Color Picker</h1>
+                <label>Select a color</label>
+                <input type='color' value={color} onChange={handleColorChange} />
+            </div>
             <div className='gridContainer'>
                 {createGrid(20)}
             </div>
-            <label>Select a color</label>
-            <input type='color' value={color} onChange={handleColorChange} />
+
         </div>
     )
 }
