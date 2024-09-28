@@ -1,46 +1,74 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, createContext, useState } from 'react';
+import PresentationGrid from './PresentationGrid';
 
-type Props = {}
+interface GridContextType {
+    gridColors: string[];
+}
 
-function ColorPicker({ }: Props) {
-    const [color, setColor] = useState<string>('#FFFFFF');
+export const GridContext = createContext<GridContextType | null>(null);
+
+const GRID_SIZE = 20;
+const INITIAL_COLOR = '#FFFFFF';
+const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
+
+const ColorPicker: React.FC = () => {
+    const [selectedColor, setSelectedColor] = useState<string>(INITIAL_COLOR);
+    const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
+    const [gridColors, setGridColors] = useState<string[]>(Array(TOTAL_CELLS).fill(INITIAL_COLOR));
 
     const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setColor(e.target.value)
-    }
+        setSelectedColor(e.target.value);
+    };
 
-    const handleDivClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        const target = e.target as HTMLDivElement;
-        target.style.backgroundColor = color;
-    }
+    const togglePresentationMode = () => {
+        setIsPresentationMode(prevMode => !prevMode);
+    };
 
-    const createGrid = (size: number) => {
-        const grid = [];
-        for (let i = 0; i < size * size; i++) {
-            grid.push(
-                <div
-                    key={i}
-                    className='gridItem'
-                    onClick={handleDivClick}
-                ></div>
-            )
-        }
-        return grid;
-    }
+    const updateGridColor = (index: number) => {
+        if (isPresentationMode) return;
+
+        const updatedGridColors = [...gridColors];
+        updatedGridColors[index] = selectedColor;
+        setGridColors(updatedGridColors);
+    };
+
+    const renderGrid = () => {
+        return Array.from({ length: TOTAL_CELLS }, (_, index) => (
+            <div
+                key={index}
+                className='gridItem'
+                style={{ backgroundColor: gridColors[index] }}
+                onClick={() => updateGridColor(index)}
+            />
+        ));
+    };
 
     return (
         <div className='colorPicker'>
             <div className='container'>
-                <h1>Color Picker</h1>
-                <label>Select a color</label>
-                <input type='color' value={color} onChange={handleColorChange} />
+                {!isPresentationMode && (
+                    <div className='textContainer'>
+                        <h1>Color Picker</h1>
+                        <label>Select a color</label>
+                        <input type='color' value={selectedColor} onChange={handleColorChange} />
+                    </div>
+                )}
+                <div className='checkbox'>
+                    <input
+                        type='checkbox'
+                        checked={isPresentationMode}
+                        onChange={togglePresentationMode}
+                    />
+                    <p>Presentation Mode</p>
+                </div>
             </div>
-            <div className='gridContainer'>
-                {createGrid(20)}
-            </div>
-
+            <GridContext.Provider value={{ gridColors }}>
+                <div className='gridContainer'>
+                    {isPresentationMode ? <PresentationGrid /> : renderGrid()}
+                </div>
+            </GridContext.Provider>
         </div>
-    )
+    );
 }
 
-export default ColorPicker
+export default ColorPicker;

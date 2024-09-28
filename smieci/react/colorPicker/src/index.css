@@ -1,27 +1,35 @@
 body {
-  font-family: Ariel, sans-serif;
+  font-family: Arial, san-serif;
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .colorPicker {
-  margin: 50px;
+  width: 100vw;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 25%;
 }
 
-.gridContainer {
+.textContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox {
+  display: flex;
+}
+
+.gridContainer,
+.presentationGrid {
   display: grid;
   grid-template-columns: repeat(20, 30px);
   grid-template-rows: repeat(20, 30px);
@@ -33,6 +41,10 @@ body {
   height: 30px;
   border: 1px solid #ddd;
   cursor: pointer;
+}
+
+.presentationGrid .gridItem {
+  cursor: default;
 }
 
 h1 {
@@ -51,39 +63,37 @@ input[type='color'] {
   padding: 5px;
   border-radius: 10px;
   border: 3px solid hsl(0, 0%, 80%);
+  margin-bottom: 15px;
 }
 
 @media only screen and (max-width: 1000px) {
   .colorPicker {
-    margin: 25px;
+    height: 100vh;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
   }
 
-  .container {
+  .container,
+  .textContainer {
     align-items: center;
-    margin-right: 0;
-    margin-bottom: 40px;
-    text-align: center;
   }
 
-  .gridContainer {
+  .gridContainer,
+  .presentationGrid {
     grid-template-columns: repeat(20, 15px);
     grid-template-rows: repeat(20, 15px);
+    gap: 2px;
   }
 
   .gridItem {
     width: 15px;
     height: 15px;
+    border: 1px solid #ddd;
+    cursor: pointer;
   }
 
   h1 {
-    font-size: 2rem;
-    margin: 10px 0;
-  }
-
-  label {
-    font-size: 1.25rem;
-    margin-bottom: 20px;
+    margin-top: 0;
   }
 }
