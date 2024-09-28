@@ -1,4 +1,4 @@
-import React, { ChangeEvent, createContext, useState } from 'react';
+import React, { ChangeEvent, createContext, useEffect, useState } from 'react';
 import PresentationGrid from './PresentationGrid';
 
 interface GridContextType {
@@ -11,10 +11,19 @@ const GRID_SIZE = 20;
 const INITIAL_COLOR = '#FFFFFF';
 const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 
-const ColorPicker: React.FC = () => {
+type Props = {};
+
+function ColorPicker({ }: Props) {
     const [selectedColor, setSelectedColor] = useState<string>(INITIAL_COLOR);
     const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
-    const [gridColors, setGridColors] = useState<string[]>(Array(TOTAL_CELLS).fill(INITIAL_COLOR));
+    const [gridColors, setGridColors] = useState<string[]>(() => {
+        const data = window.localStorage.getItem('painting');
+        return data ? JSON.parse(data) : Array(TOTAL_CELLS).fill(INITIAL_COLOR);
+    });
+
+    useEffect(() => {
+        window.localStorage.setItem('painting', JSON.stringify(gridColors))
+    }, [gridColors])
 
     const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSelectedColor(e.target.value);
