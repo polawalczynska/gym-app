@@ -1,17 +1,11 @@
-import React, { useContext } from 'react';
-import { GridContext } from './ColorPicker';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from './state/store';
 
 type Props = {};
 
 function PresentationGrid({ }: Props) {
-    const context = useContext(GridContext);
-
-    if (!context) {
-        console.log('no grid available');
-        return;
-    }
-
-    const { gridColors } = context;
+    const gridColors = useSelector((state: RootState) => state.grid.gridColors)
 
     return (
         <div className='presentationGrid'>

@@ -1,45 +1,29 @@
-import React, { ChangeEvent, createContext, useEffect, useState } from 'react';
+import React, { ChangeEvent } from 'react';
 import PresentationGrid from './PresentationGrid';
-
-interface GridContextType {
-    gridColors: string[];
-}
-
-export const GridContext = createContext<GridContextType | null>(null);
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './state/store';
+import { setColor, togglePresentationMode, updateGridColor } from './state/grid/gridSlice';
 
 const GRID_SIZE = 20;
-const INITIAL_COLOR = '#FFFFFF';
 const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 
 type Props = {};
 
 function ColorPicker({ }: Props) {
-    const [selectedColor, setSelectedColor] = useState<string>(INITIAL_COLOR);
-    const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
-    const [gridColors, setGridColors] = useState<string[]>(() => {
-        const data = window.localStorage.getItem('painting');
-        return data ? JSON.parse(data) : Array(TOTAL_CELLS).fill(INITIAL_COLOR);
-    });
-
-    useEffect(() => {
-        window.localStorage.setItem('painting', JSON.stringify(gridColors))
-    }, [gridColors])
+    const dispatch = useDispatch();
+    const { selectedColor, isPresentationMode, gridColors } = useSelector((state: RootState) => state.grid);
 
     const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSelectedColor(e.target.value);
-    };
+        dispatch(setColor(e.target.value));
+    }
 
-    const togglePresentationMode = () => {
-        setIsPresentationMode(prevMode => !prevMode);
-    };
+    const toggleMode = () => {
+        dispatch(togglePresentationMode());
+    }
 
-    const updateGridColor = (index: number) => {
-        if (isPresentationMode) return;
-
-        const updatedGridColors = [...gridColors];
-        updatedGridColors[index] = selectedColor;
-        setGridColors(updatedGridColors);
-    };
+    const handleGridColorUpdate = (index: number) => {
+        dispatch(updateGridColor(index));
+    }
 
     const renderGrid = () => {
         return Array.from({ length: TOTAL_CELLS }, (_, index) => (
@@ -47,7 +31,7 @@ function ColorPicker({ }: Props) {
                 key={index}
                 className='gridItem'
                 style={{ backgroundColor: gridColors[index] }}
-                onClick={() => updateGridColor(index)}
+                onClick={() => handleGridColorUpdate(index)}
             />
         ));
     };
@@ -66,16 +50,14 @@ function ColorPicker({ }: Props) {
                     <input
                         type='checkbox'
                         checked={isPresentationMode}
-                        onChange={togglePresentationMode}
+                        onChange={toggleMode}
                     />
                     <p>Presentation Mode</p>
                 </div>
             </div>
-            <GridContext.Provider value={{ gridColors }}>
-                <div className='gridContainer'>
-                    {isPresentationMode ? <PresentationGrid /> : renderGrid()}
-                </div>
-            </GridContext.Provider>
+            <div className='gridContainer'>
+                {isPresentationMode ? <PresentationGrid /> : renderGrid()}
+            </div>
         </div>
     );
 }
