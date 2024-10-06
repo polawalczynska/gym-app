@@ -31,8 +31,14 @@ const gridSlice = createSlice({
                 state.gridColors[action.payload] = state.selectedColor;
             }
         },
+        setGridColors(state, action: PayloadAction<string[]>) {
+            state.gridColors = action.payload;
+        },
+        reset(state) {
+            state.gridColors.fill(INITIAL_COLOR);
+        },
     },
 });
 
-export const { setColor, togglePresentationMode, updateGridColor } = gridSlice.actions;
+export const { setColor, togglePresentationMode, updateGridColor, setGridColors, reset } = gridSlice.actions;
 export default gridSlice.reducer;
