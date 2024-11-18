@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios';
 
 type Props = {}
 
@@ -8,20 +9,19 @@ function Register({ }: Props) {
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8080/api/v1/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/auth/register', {
+                email,
+                password
+            });
 
-        if (response.ok) {
-            alert('register success');
-            window.location.href = '/login';
-        } else {
-            console.log(response);
-            alert('register failed');
+            if (response.status === 200) {
+                alert('User registered successfully');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Registration failed: ', error);
+            alert('Registration failed');
         }
     }
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 type Props = {
     onLogin: (isLoggedIn: boolean) => void;
@@ -12,23 +13,24 @@ function Login({ onLogin }: Props) {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8080/api/v1/auth/authenticate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            console.log('success', data);
-            localStorage.setItem('token', data.token);
-            onLogin(true);
-            navigate('/dashboard');
-        } else {
-            alert('login failed');
-        }
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/auth/authenticate', {
+                email,
+                password
+            });
 
+            if (response.status === 200) {
+                const { token } = response.data;
+                localStorage.setItem('token', token);
+                onLogin(true);
+                navigate('/dashboard');
+            } else {
+                alert('Login failed');
+            }
+        } catch (error) {
+            console.error('Login failed: ', error);
+            alert('Login failed');
+        }
     }
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
